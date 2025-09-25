@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <div th:replace="~{layout :: main-layout(~{::div.content})}">
+        <div class="content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 th:text="${author.author_id == null ? 'Thêm tác giả mới' : 'Sửa tác giả'}"></h2>
+                <a th:href="@{/admin/authors}" class="btn btn-secondary">Quay lại</a>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="${author.author_id == null ? '/admin/authors/save' : '/admin/authors/update'}" th:object="${author}" method="post">
+                                <input type="hidden" th:field="*{author_id}">
+                                <div class="mb-3">
+                                    <label for="author_name" class="form-label">Tên tác giả <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="author_name" th:field="*{author_name}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="date_of_birth" class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" id="date_of_birth" th:field="*{date_of_birth}">
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a th:href="@{/admin/authors}" class="btn btn-secondary me-md-2">Hủy</a>
+                                    <button type="submit" class="btn btn-primary" th:text="${author.author_id == null ? 'Thêm tác giả' : 'Cập nhật tác giả'}">Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

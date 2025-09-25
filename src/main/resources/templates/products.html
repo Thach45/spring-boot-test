@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <div th:replace="~{layout :: main-layout(~{::div.content})}">
+        <div class="content">
+            <h1>Danh sách sách</h1>
+            
+            <div class="row" th:if="${books != null and !books.empty}">
+                <div class="col-md-6 mb-4" th:each="book : ${books}">
+                    <div class="card h-100">
+                        <div class="row g-0">
+                            <!-- Book Cover Image -->
+                            <div class="col-md-4">
+                                <img th:src="${book.cover_image != null ? book.cover_image : '/images/default-book.jpg'}" 
+                                     class="img-fluid rounded-start h-100" 
+                                     style="object-fit: cover;"
+                                     alt="Book Cover">
+                            </div>
+                            
+                            <!-- Book Information -->
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a th:href="@{/book/{id}(id=${book.bookid})}" 
+                                           th:text="${book.title}" 
+                                           class="text-decoration-none text-dark">Tiêu đề sách</a>
+                                    </h5>
+                                    
+                                    <div class="book-details">
+                                        <p class="mb-1"><strong>Mã ISBN:</strong> <span th:text="${book.isbn}">123456789</span></p>
+                                        
+                                        <p class="mb-1"><strong>Tác giả:</strong> 
+                                            <span th:if="${book.authors != null and !book.authors.empty}">
+                                                <span th:each="author, iterStat : ${book.authors}" 
+                                                      th:text="${author.author_name} + (${!iterStat.last} ? ', ' : '')">Tác giả</span>
+                                            </span>
+                                            <span th:if="${book.authors == null or book.authors.empty}">Chưa có thông tin</span>
+                                        </p>
+                                        
+                                        <p class="mb-1"><strong>Nhà xuất bản:</strong> <span th:text="${book.publisher}">Publisher</span></p>
+                                        
+                                        <p class="mb-1"><strong>Ngày xuất bản:</strong> 
+                                            <span th:text="${book.publish_date != null ? #temporals.format(book.publish_date, 'dd/MM/yyyy') : 'Chưa có thông tin'}">01/01/2024</span>
+                                        </p>
+                                        
+                                        <p class="mb-1"><strong>Số lượng:</strong> <span th:text="${book.quantity}">0</span></p>
+                                        
+                                        <p class="mb-1"><strong>Giá:</strong> 
+                                            <span th:text="${book.price != null ? #numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'Chưa có giá'}">0 VNĐ</span>
+                                        </p>
+                                        
+                                        <!-- Review Section -->
+                                        <div class="mt-2">
+                                            <strong>Review (<span th:text="${bookService.getRatingCount(book.bookid)}">0</span>):</strong>
+                                            <div class="rating">
+                                                <span class="text-warning" th:if="${bookService.getAverageRating(book.bookid) > 0}">
+                                                    <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                                          th:class="${i <= bookService.getAverageRating(book.bookid)} ? 'text-warning' : 'text-muted'">★</span>
+                                                </span>
+                                                <span class="text-muted" th:if="${bookService.getAverageRating(book.bookid) == 0}">★★★★★</span>
+                                                <small class="text-muted ms-2" th:if="${bookService.getAverageRating(book.bookid) > 0}">
+                                                    (<span th:text="${#numbers.formatDecimal(bookService.getAverageRating(book.bookid), 1, 1)}">0.0</span>/5.0)
+                                                </small>
+                                                <small class="text-muted ms-2" th:if="${bookService.getAverageRating(book.bookid) == 0}">(Chưa có đánh giá)</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Book Description -->
+                                        <div class="mt-2" th:if="${book.description != null and !book.description.empty}">
+                                            <p class="card-text">
+                                                <small class="text-muted" th:text="${#strings.abbreviate(book.description, 100)}">Mô tả sách...</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- No books message -->
+            <div class="alert alert-info" th:if="${books == null or books.empty}">
+                <h4>Không có sách nào</h4>
+                <p>Hiện tại chưa có sách nào trong hệ thống.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

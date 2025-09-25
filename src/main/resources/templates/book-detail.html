@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <div th:replace="~{layout :: main-layout(~{::div.content})}">
+        <div class="content">
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- Book Information Section -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <img th:src="${book.cover_image != null ? book.cover_image : '/images/default-book.jpg'}" 
+                         class="img-fluid rounded" 
+                         alt="Book Cover"
+                         style="max-height: 400px; object-fit: cover;">
+                </div>
+                
+                <div class="col-md-8">
+                    <h2 th:text="${book.title}">Tiêu đề sách</h2>
+                    
+                    <div class="book-details">
+                        <p class="mb-2"><strong>Tiêu đề:</strong> <span th:text="${book.title}">Tiêu đề sách</span></p>
+                        <p class="mb-2"><strong>Mã ISBN:</strong> <span th:text="${book.isbn}">123456789</span></p>
+                        
+                        <p class="mb-2"><strong>Tác giả:</strong> 
+                            <span th:if="${book.authors != null and !book.authors.empty}">
+                                <span th:each="author, iterStat : ${book.authors}" 
+                                      th:text="${author.author_name} + (${!iterStat.last} ? ', ' : '')">Tác giả</span>
+                            </span>
+                            <span th:if="${book.authors == null or book.authors.empty}">Chưa có thông tin</span>
+                        </p>
+                        
+                        <p class="mb-2"><strong>Publisher:</strong> <span th:text="${book.publisher}">Publisher</span></p>
+                        
+                        <p class="mb-2"><strong>Publisher_date:</strong> 
+                            <span th:text="${book.publish_date != null ? #temporals.format(book.publish_date, 'dd/MM/yyyy') : 'Chưa có thông tin'}">01/01/2024</span>
+                        </p>
+                        
+                        <p class="mb-2"><strong>Quantity:</strong> <span th:text="${book.quantity}">0</span></p>
+                        
+                        <p class="mb-2"><strong>Giá:</strong> 
+                            <span th:text="${book.price != null ? #numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : 'Chưa có giá'}">0 VNĐ</span>
+                        </p>
+                        
+                        <div class="mt-3">
+                            <strong>Reviews (<span th:text="${bookService.getRatingCount(book.bookid)}">0</span>):</strong>
+                            <div class="rating">
+                                <span class="text-warning" th:if="${bookService.getAverageRating(book.bookid) > 0}">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                          th:class="${i <= bookService.getAverageRating(book.bookid)} ? 'text-warning' : 'text-muted'">★</span>
+                                </span>
+                                <span class="text-muted" th:if="${bookService.getAverageRating(book.bookid) == 0}">★★★★★</span>
+                                <small class="text-muted ms-2" th:if="${bookService.getAverageRating(book.bookid) > 0}">
+                                    (<span th:text="${#numbers.formatDecimal(bookService.getAverageRating(book.bookid), 1, 1)}">0.0</span>/5.0)
+                                </small>
+                                <small class="text-muted ms-2" th:if="${bookService.getAverageRating(book.bookid) == 0}">(Chưa có đánh giá)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Horizontal Line -->
+            <hr class="my-4" style="border-top: 3px solid #000;">
+            
+            <!-- Reviews Section -->
+            <div class="reviews-section">
+                <h3>Reviews</h3>
+                
+                <!-- Existing Reviews -->
+                <div class="reviews-list mb-4">
+                    <div class="alert alert-info" th:if="${ratings == null or ratings.empty}">
+                        <p>Chưa có đánh giá nào cho cuốn sách này.</p>
+                    </div>
+                    
+                    <!-- Review entries -->
+                    <div class="review-item mb-3 p-3 border rounded" th:each="review : ${ratings}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong th:text="${review.user.fullname}">[users]</strong>
+                                <div class="rating">
+                                    <span class="text-warning" th:text="${'★'.repeat(review.rating)}">★★★★★</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mt-2 mb-0" th:text="${review.review_text}">[review_text]</p>
+                    </div>
+                </div>
+                
+                <!-- Add Review Form -->
+                <div class="add-review-form">
+                    <h4>Form thêm reviews</h4>
+                    <form th:action="@{/book/{id}/review(id=${book.bookid})}" method="post">
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Đánh giá (1-5 sao):</label>
+                            <select class="form-select" id="rating" name="rating" required>
+                                <option value="">Chọn đánh giá</option>
+                                <option value="1">1 sao</option>
+                                <option value="2">2 sao</option>
+                                <option value="3">3 sao</option>
+                                <option value="4">4 sao</option>
+                                <option value="5">5 sao</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="review_text" class="form-label">Nội dung đánh giá:</label>
+                            <textarea class="form-control" 
+                                      id="review_text" 
+                                      name="review_text" 
+                                      rows="4" 
+                                      placeholder="Viết đánh giá của bạn về cuốn sách này..."
+                                      required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

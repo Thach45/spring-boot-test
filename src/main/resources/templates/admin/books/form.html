@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <div th:replace="~{layout :: main-layout(~{::div.content})}">
+        <div class="content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 th:text="${book.bookid == null ? 'Thêm sách mới' : 'Sửa sách'}"></h2>
+                <a th:href="@{/admin/books}" class="btn btn-secondary">Quay lại</a>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="${book.bookid == null ? '/admin/books/save' : '/admin/books/update'}" th:object="${book}" method="post">
+                                <input type="hidden" th:field="*{bookid}">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="isbn" class="form-label">ISBN</label>
+                                        <input type="number" class="form-control" id="isbn" th:field="*{isbn}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="title" class="form-label">Tên sách <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="publisher" class="form-label">Nhà xuất bản</label>
+                                        <input type="text" class="form-control" id="publisher" th:field="*{publisher}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="price" class="form-label">Giá (VNĐ)</label>
+                                        <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="publish_date" class="form-label">Ngày xuất bản</label>
+                                        <input type="date" class="form-control" id="publish_date" th:field="*{publish_date}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="quantity" class="form-label">Số lượng</label>
+                                        <input type="number" class="form-control" id="quantity" th:field="*{quantity}">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="cover_image" class="form-label">Hình ảnh bìa</label>
+                                    <input type="text" class="form-control" id="cover_image" th:field="*{cover_image}" placeholder="URL hình ảnh">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Mô tả</label>
+                                    <textarea class="form-control" id="description" th:field="*{description}" rows="4"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Tác giả</label>
+                                    <div class="row">
+                                        <div th:each="author : ${authors}" class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       th:id="'author_' + ${author.author_id}"
+                                                       th:value="${author.author_id}"
+                                                       name="authorIds"
+                                                       th:checked="${book.authors != null and book.authors.contains(author)}">
+                                                <label class="form-check-label" th:for="'author_' + ${author.author_id}" th:text="${author.author_name}">
+                                                    Tên tác giả
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Chọn một hoặc nhiều tác giả cho cuốn sách này</small>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a th:href="@{/admin/books}" class="btn btn-secondary me-md-2">Hủy</a>
+                                    <button type="submit" class="btn btn-primary" th:text="${book.bookid == null ? 'Thêm sách' : 'Cập nhật sách'}">Lưu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

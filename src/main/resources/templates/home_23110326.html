@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layout_23110326}">
+<head>
+    <title>Trang Chủ</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1>Welcome to Book Store</h1>
+        <p>Find your favorite books here!</p>
+        <div th:if="${username}" class="alert alert-success">
+            Welcome back, <span th:text="${username}"></span>!
+        </div>
+        <div th:if="${isAdmin}" class="alert alert-info">
+            You have admin privileges.
+        </div>
+    </div>
+</body>
+</html>

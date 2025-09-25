@@ -6,7 +6,6 @@ import com.example.nguyenhoangthach.service.UserService_23110326;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,15 +18,15 @@ import java.util.Optional;
 public class AuthController_23110326 {
 
     @Autowired
-    private UserService_23110326 userService;
+    private UserService_23110326 userService_23110326;
 
 
     @Autowired
-    private SessionService_23110326 sessionService;
+    private SessionService_23110326 sessionService_23110326;
 
     @GetMapping("/register")
     public String showRegisterForm() {
-        return "register";
+        return "register_23110326";
     }
 
     @PostMapping("/register")
@@ -43,7 +42,7 @@ public class AuthController_23110326 {
             return "redirect:/register";
         }
 
-        if (userService.findByEmail(email).isPresent()) {
+        if (userService_23110326.findByEmail(email).isPresent()) {
             redirectAttributes.addFlashAttribute("error", "Email đã tồn tại!");
             return "redirect:/register";
         }
@@ -56,14 +55,14 @@ public class AuthController_23110326 {
         user.setSignup_date(LocalDateTime.now());
         user.setIs_admin(false);
 
-        userService.saveUser(user);
+        userService_23110326.saveUser(user);
         redirectAttributes.addFlashAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
         return "redirect:/login";
     }
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login";
+        return "login_23110326";
     }
 
     @PostMapping("/login")
@@ -72,18 +71,18 @@ public class AuthController_23110326 {
                        HttpSession session,
                        RedirectAttributes redirectAttributes) {
         
-        Optional<Users_23110326> userOpt = userService.findByEmail(username);
+        Optional<Users_23110326> userOpt = userService_23110326.findByEmail(username);
         
         if (userOpt.isPresent()) {
             Users_23110326 user = userOpt.get();
             if (password.equals(user.getPasswd())) {
                 // Cập nhật thời gian đăng nhập cuối
                 user.setLast_login(LocalDateTime.now());
-                userService.saveUser(user);
+                userService_23110326.saveUser(user);
                 
                 // Lưu thông tin user vào session
-                sessionService.setAttribute(session, "currentUser", user);
-                sessionService.setAttribute(session, "isAdmin", user.getIs_admin());
+                sessionService_23110326.setAttribute(session, "currentUser", user);
+                sessionService_23110326.setAttribute(session, "isAdmin", user.getIs_admin());
                 
                 return "redirect:/home";
             }
@@ -95,7 +94,7 @@ public class AuthController_23110326 {
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        sessionService.invalidate(session);
+        sessionService_23110326.invalidate(session);
         return "redirect:/login?logout";
     }
 }

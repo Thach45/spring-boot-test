@@ -20,13 +20,13 @@ import java.util.Optional;
 public class BookController_23110326 {
 
     @Autowired
-    private BookService_23110326 bookService;
+    private BookService_23110326 bookService_23110326;
 
     @Autowired
-    private AuthorService_23110326 authorService;
+    private AuthorService_23110326 authorService_23110326;
 
     @Autowired
-    private SessionService_23110326 sessionService;
+    private SessionService_23110326 sessionService_23110326;
 
     @GetMapping
     public String listBooks(@RequestParam(defaultValue = "0") int page,
@@ -37,17 +37,17 @@ public class BookController_23110326 {
                            HttpSession session, Model model) {
         
         // Kiểm tra quyền admin
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
         Page<Books_23110326> books;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            books = bookService.searchBooks(keyword, page, size, sortBy, sortDir);
+            books = bookService_23110326.searchBooks(keyword, page, size, sortBy, sortDir);
             model.addAttribute("keyword", keyword);
         } else {
-            books = bookService.getAllBooks(page, size, sortBy, sortDir);
+            books = bookService_23110326.getAllBooks(page, size, sortBy, sortDir);
         }
 
         model.addAttribute("books", books);
@@ -58,33 +58,33 @@ public class BookController_23110326 {
         model.addAttribute("sortDir", sortDir);
         model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
 
-        return "admin/books/list";
+        return "admin/books/list_23110326";
     }
 
     @GetMapping("/new")
     public String showNewBookForm(HttpSession session, Model model) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
         model.addAttribute("book", new Books_23110326());
-        model.addAttribute("authors", authorService.getAllAuthors());
-        return "admin/books/form";
+        model.addAttribute("authors", authorService_23110326.getAllAuthors());
+        return "admin/books/form_23110326";
     }
 
     @PostMapping("/save")
     public String saveBook(@ModelAttribute Books_23110326 book, 
                           @RequestParam(value = "authorIds", required = false) List<Integer> authorIds,
                           HttpSession session, RedirectAttributes redirectAttributes) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
         try {
             // Kiểm tra ISBN duplicate khi tạo mới
-            Optional<Books_23110326> existingBook = bookService.findByIsbn(book.getIsbn());
+            Optional<Books_23110326> existingBook = bookService_23110326.findByIsbn(book.getIsbn());
             if (existingBook.isPresent()) {
                 redirectAttributes.addFlashAttribute("error", "ISBN đã tồn tại! Vui lòng chọn ISBN khác.");
                 return "redirect:/admin/books/new";
@@ -92,10 +92,10 @@ public class BookController_23110326 {
             
             // Xử lý authors
             if (authorIds != null && !authorIds.isEmpty()) {
-                bookService.assignAuthorsToBook(book, authorIds);
+                bookService_23110326.assignAuthorsToBook(book, authorIds);
             }
             
-            bookService.saveBook(book);
+            bookService_23110326.saveBook(book);
             redirectAttributes.addFlashAttribute("message", "Sách đã được thêm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm sách: " + e.getMessage());
@@ -109,7 +109,7 @@ public class BookController_23110326 {
     public String updateBook(@ModelAttribute Books_23110326 book, 
                            @RequestParam(value = "authorIds", required = false) List<Integer> authorIds,
                            HttpSession session, RedirectAttributes redirectAttributes) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
@@ -117,10 +117,10 @@ public class BookController_23110326 {
         try {
             // Xử lý authors
             if (authorIds != null) {
-                bookService.assignAuthorsToBook(book, authorIds);
+                bookService_23110326.assignAuthorsToBook(book, authorIds);
             }
             
-            bookService.updateBook(book);
+            bookService_23110326.updateBook(book);
             redirectAttributes.addFlashAttribute("message", "Sách đã được cập nhật thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sách: " + e.getMessage());
@@ -131,29 +131,29 @@ public class BookController_23110326 {
 
     @GetMapping("/edit/{id}")
     public String showEditBookForm(@PathVariable Integer id, HttpSession session, Model model) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
-        Books_23110326 book = bookService.getBookById(id).orElse(null);
+        Books_23110326 book = bookService_23110326.getBookById(id).orElse(null);
         if (book == null) {
             return "redirect:/admin/books";
         }
 
         model.addAttribute("book", book);
-        model.addAttribute("authors", authorService.getAllAuthors());
-        return "admin/books/form";
+        model.addAttribute("authors", authorService_23110326.getAllAuthors());
+        return "admin/books/form_23110326";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteBook(@PathVariable Integer id, HttpSession session, RedirectAttributes redirectAttributes) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
-        bookService.deleteBook(id);
+        bookService_23110326.deleteBook(id);
         redirectAttributes.addFlashAttribute("message", "Sách đã được xóa thành công!");
         return "redirect:/admin/books";
     }

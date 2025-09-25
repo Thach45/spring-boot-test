@@ -15,26 +15,26 @@ import java.util.Optional;
 public class RatingService_23110326 {
 
     @Autowired
-    private RatingRepository_23110326 ratingRepository;
+    private RatingRepository_23110326 ratingRepository_23110326;
 
     public List<Rating_23110326> getRatingsByBookId(Integer bookId) {
-        return ratingRepository.findByBookId(bookId);
+        return ratingRepository_23110326.findByBookId(bookId);
     }
 
     public Rating_23110326 saveRating(Rating_23110326 rating) {
-        return ratingRepository.save(rating);
+        return ratingRepository_23110326.save(rating);
     }
 
     public Rating_23110326 updateRating(Rating_23110326 rating) {
-        return ratingRepository.save(rating);
+        return ratingRepository_23110326.save(rating);
     }
 
     public Optional<Rating_23110326> getRatingByUserAndBook(Integer userId, Integer bookId) {
-        return Optional.ofNullable(ratingRepository.findByUserIdAndBookId(userId, bookId));
+        return Optional.ofNullable(ratingRepository_23110326.findByUserIdAndBookId(userId, bookId));
     }
 
     public void deleteRating(RatingId_23110326 ratingId) {
-        ratingRepository.deleteById(ratingId);
+        ratingRepository_23110326.deleteById(ratingId);
     }
 
     public Rating_23110326 createRating(Users_23110326 user, Books_23110326 book, Byte rating, String reviewText) {

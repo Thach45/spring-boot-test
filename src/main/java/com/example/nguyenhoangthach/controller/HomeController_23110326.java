@@ -19,65 +19,65 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class HomeController_23110326 {
 
     @Autowired
-    private SessionService_23110326 sessionService;
+    private SessionService_23110326 sessionService_23110326;
 
     @Autowired
-    private BookService_23110326 bookService;
+    private BookService_23110326 bookService_23110326;
 
     @Autowired
-    private RatingService_23110326 ratingService;
+    private RatingService_23110326 ratingService_23110326;
 
     @GetMapping({"/", "/home"})
     public String home(HttpSession session, Model model) {
-        Users_23110326 currentUser = (Users_23110326) sessionService.getAttribute(session, "currentUser");
+        Users_23110326 currentUser = (Users_23110326) sessionService_23110326.getAttribute(session, "currentUser");
         if (currentUser != null) {
             model.addAttribute("username", currentUser.getFullname());
-            model.addAttribute("isAdmin", sessionService.getAttribute(session, "isAdmin"));
+            model.addAttribute("isAdmin", sessionService_23110326.getAttribute(session, "isAdmin"));
             // Truyền session data vào model để template có thể truy cập
             model.addAttribute("session", session);
-            return "home";
+            return "home_23110326";
         }
         return "redirect:/login";
     }
 
     @GetMapping("/products")
     public String products(HttpSession session, Model model) {
-        Users_23110326 currentUser = (Users_23110326) sessionService.getAttribute(session, "currentUser");
+        Users_23110326 currentUser = (Users_23110326) sessionService_23110326.getAttribute(session, "currentUser");
         if (currentUser != null) {
             model.addAttribute("username", currentUser.getFullname());
-            model.addAttribute("books", bookService.getAllBooksWithAuthors());
-            model.addAttribute("bookService", bookService);
-            return "products";
+            model.addAttribute("books", bookService_23110326.getAllBooksWithAuthors());
+            model.addAttribute("bookService", bookService_23110326);
+            return "products_23110326";
         }
         return "redirect:/login";
     }
 
     @GetMapping("/admin")
     public String admin(HttpSession session, Model model) {
-        Users_23110326 currentUser = (Users_23110326) sessionService.getAttribute(session, "currentUser");
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Users_23110326 currentUser = (Users_23110326) sessionService_23110326.getAttribute(session, "currentUser");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         
         if (currentUser != null && isAdmin != null && isAdmin) {
             model.addAttribute("username", currentUser.getFullname());
             model.addAttribute("session", session);
-            return "admin/dashboard";
+            return "admin/dashboard_23110326";
         }
         return "redirect:/home";
     }
 
     @GetMapping("/book/{id}")
     public String bookDetail(@PathVariable Integer id, HttpSession session, Model model) {
-        Users_23110326 currentUser = (Users_23110326) sessionService.getAttribute(session, "currentUser");
+        Users_23110326 currentUser = (Users_23110326) sessionService_23110326.getAttribute(session, "currentUser");
         if (currentUser != null) {
             model.addAttribute("username", currentUser.getFullname());
             model.addAttribute("currentUser", currentUser);
             
-            var book = bookService.getBookById(id);
+            var book = bookService_23110326.getBookById(id);
             if (book.isPresent()) {
                 model.addAttribute("book", book.get());
-                model.addAttribute("ratings", ratingService.getRatingsByBookId(id));
-                model.addAttribute("bookService", bookService);
-                return "book-detail";
+                model.addAttribute("ratings", ratingService_23110326.getRatingsByBookId(id));
+                model.addAttribute("bookService", bookService_23110326);
+                return "book-detail_23110326";
             }
         }
         return "redirect:/products";
@@ -89,13 +89,13 @@ public class HomeController_23110326 {
                               @RequestParam String review_text,
                               HttpSession session, 
                               RedirectAttributes redirectAttributes) {
-        Users_23110326 currentUser = (Users_23110326) sessionService.getAttribute(session, "currentUser");
+        Users_23110326 currentUser = (Users_23110326) sessionService_23110326.getAttribute(session, "currentUser");
         if (currentUser != null) {
-            var book = bookService.getBookById(id);
+            var book = bookService_23110326.getBookById(id);
             if (book.isPresent()) {
                 try {
                     // Check if user already reviewed this book
-                    var existingRating = ratingService.getRatingByUserAndBook(currentUser.getId(), id);
+                    var existingRating = ratingService_23110326.getRatingByUserAndBook(currentUser.getId(), id);
                     
                     Rating_23110326 ratingEntity;
                     if (existingRating.isPresent()) {
@@ -103,12 +103,12 @@ public class HomeController_23110326 {
                         ratingEntity = existingRating.get();
                         ratingEntity.setRating(rating);
                         ratingEntity.setReview_text(review_text);
-                        ratingService.updateRating(ratingEntity);
+                        ratingService_23110326.updateRating(ratingEntity);
                         redirectAttributes.addFlashAttribute("message", "Đánh giá đã được cập nhật!");
                     } else {
                         // Create new review
-                        ratingEntity = ratingService.createRating(currentUser, book.get(), rating, review_text);
-                        ratingService.saveRating(ratingEntity);
+                        ratingEntity = ratingService_23110326.createRating(currentUser, book.get(), rating, review_text);
+                        ratingService_23110326.saveRating(ratingEntity);
                         redirectAttributes.addFlashAttribute("message", "Đánh giá đã được thêm thành công!");
                     }
                 } catch (Exception e) {

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layout_23110326}">
+<head>
+    <title th:text="${book != null ? book.title : 'Chi tiết sách'}">Chi tiết sách</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Book Information Section -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <img th:src="${book != null and book.cover_image != null ? book.cover_image : '/images/default-book.jpg'}" 
+                     class="img-fluid rounded" 
+                     alt="Book Cover"
+                     style="max-height: 400px; object-fit: cover;">
+            </div>
+            
+            <div class="col-md-8">
+                <h2 th:text="${book != null ? book.title : 'Tiêu đề sách'}">Tiêu đề sách</h2>
+                
+                <div class="book-details">
+                    <p class="mb-2"><strong>Tiêu đề:</strong> <span th:text="${book != null ? book.title : 'Tiêu đề sách'}">Tiêu đề sách</span></p>
+                    <p class="mb-2"><strong>Mã ISBN:</strong> <span th:text="${book != null ? book.isbn : 'ISBN'}">ISBN</span></p>
+                    <p class="mb-2"><strong>Tác giả:</strong> 
+                        <span th:if="${book != null and book.authors != null and !book.authors.empty}"
+                              th:text="${#strings.listJoin(book.authors.![author_name], ', ')}"></span>
+                        <span th:if="${book == null or book.authors == null or book.authors.empty}">Chưa có</span>
+                    </p>
+                    <p class="mb-2"><strong>Nhà xuất bản:</strong> <span th:text="${book != null ? book.publisher : 'Publisher'}">Publisher</span></p>
+                    <p class="mb-2"><strong>Ngày xuất bản:</strong> 
+                        <span th:text="${book != null ? #temporals.format(book.publish_date, 'dd/MM/yyyy') : 'Ngày xuất bản'}">Ngày xuất bản</span>
+                    </p>
+                    <p class="mb-2"><strong>Số lượng:</strong> <span th:text="${book != null ? book.quantity : 'Số lượng'}">Số lượng</span></p>
+                    <p class="mb-2"><strong>Giá:</strong> 
+                        <span th:text="${book != null ? #numbers.formatDecimal(book.price, 0, 'COMMA', 0, 'POINT') : 'Giá'}">Giá</span> VNĐ
+                    </p>
+                    <p class="mb-2"><strong>Mô tả:</strong> <span th:text="${book != null ? book.description : 'Mô tả'}">Mô tả</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reviews Section -->
+        <div class="row">
+            <div class="col-12">
+                <h3>Đánh giá sách</h3>
+                
+                <!-- Rating Summary -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div th:if="${book != null and bookService.getRatingCount(book.bookid) > 0}">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="text-warning me-3">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                        <i th:class="${i <= bookService.getAverageRating(book.bookid)} ? 'fas fa-star' : 'far fa-star'"></i>
+                                    </span>
+                                </div>
+                                <h4 class="mb-0">
+                                    <span th:text="${#numbers.formatDecimal(bookService.getAverageRating(book.bookid), 1, 1)}"></span>/5.0
+                                </h4>
+                                <span class="text-muted ms-2">
+                                    (<span th:text="${bookService.getRatingCount(book.bookid)}"></span> đánh giá)
+                                </span>
+                            </div>
+                        </div>
+                        <div th:if="${book == null or bookService.getRatingCount(book.bookid) == 0}">
+                            <p class="text-muted">Chưa có đánh giá nào</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Existing Reviews -->
+                <div th:if="${ratings != null and !ratings.empty}">
+                    <h4>Đánh giá từ người dùng</h4>
+                    <div th:each="rating : ${ratings}" class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title" th:text="${rating.user.fullname}">Tên người dùng</h6>
+                                    <div class="text-warning mb-2">
+                                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                            <i th:class="${i <= rating.rating} ? 'fas fa-star' : 'far fa-star'"></i>
+                                        </span>
+                                    </div>
+                                    <p class="card-text" th:text="${rating.review_text}">Nội dung đánh giá</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Review Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Thêm đánh giá</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="${book != null ? '/book/' + book.bookid + '/review' : '#'}" method="post">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Đánh giá (1-5 sao)</label>
+                                <select class="form-select" id="rating" name="rating" required>
+                                    <option value="">Chọn đánh giá</option>
+                                    <option value="1">1 sao</option>
+                                    <option value="2">2 sao</option>
+                                    <option value="3">3 sao</option>
+                                    <option value="4">4 sao</option>
+                                    <option value="5">5 sao</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="review_text" class="form-label">Nhận xét</label>
+                                <textarea class="form-control" id="review_text" name="review_text" rows="3" 
+                                          placeholder="Chia sẻ nhận xét của bạn về cuốn sách này..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

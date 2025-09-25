@@ -16,10 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthorController_23110326 {
 
     @Autowired
-    private AuthorService_23110326 authorService;
+    private AuthorService_23110326 authorService_23110326;
 
     @Autowired
-    private SessionService_23110326 sessionService;
+    private SessionService_23110326 sessionService_23110326;
 
     @GetMapping
     public String listAuthors(@RequestParam(defaultValue = "0") int page,
@@ -28,17 +28,17 @@ public class AuthorController_23110326 {
                              HttpSession session, Model model) {
         
         // Kiểm tra quyền admin
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
         Page<Author_23110326> authors;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            authors = authorService.searchAuthors(keyword, page, size);
+            authors = authorService_23110326.searchAuthors(keyword, page, size);
             model.addAttribute("keyword", keyword);
         } else {
-            authors = authorService.getAllAuthors(page, size);
+            authors = authorService_23110326.getAllAuthors(page, size);
         }
 
         model.addAttribute("authors", authors);
@@ -46,68 +46,68 @@ public class AuthorController_23110326 {
         model.addAttribute("totalPages", authors.getTotalPages());
         model.addAttribute("totalItems", authors.getTotalElements());
 
-        return "admin/authors/list";
+        return "admin/authors/list_23110326";
     }
 
     @GetMapping("/new")
     public String showNewAuthorForm(HttpSession session, Model model) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
         model.addAttribute("author", new Author_23110326());
-        return "admin/authors/form";
+        return "admin/authors/form_23110326";
     }
 
     @PostMapping("/save")
     public String saveAuthor(@ModelAttribute Author_23110326 author, HttpSession session, RedirectAttributes redirectAttributes) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
-        authorService.saveAuthor(author);
+        authorService_23110326.saveAuthor(author);
         redirectAttributes.addFlashAttribute("message", "Tác giả đã được thêm thành công!");
         return "redirect:/admin/authors";
     }
 
     @PostMapping("/update")
     public String updateAuthor(@ModelAttribute Author_23110326 author, HttpSession session, RedirectAttributes redirectAttributes) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
-        authorService.updateAuthor(author);
+        authorService_23110326.updateAuthor(author);
         redirectAttributes.addFlashAttribute("message", "Tác giả đã được cập nhật thành công!");
         return "redirect:/admin/authors";
     }
 
     @GetMapping("/edit/{id}")
     public String showEditAuthorForm(@PathVariable Integer id, HttpSession session, Model model) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
-        Author_23110326 author = authorService.getAuthorById(id).orElse(null);
+        Author_23110326 author = authorService_23110326.getAuthorById(id).orElse(null);
         if (author == null) {
             return "redirect:/admin/authors";
         }
 
         model.addAttribute("author", author);
-        return "admin/authors/form";
+        return "admin/authors/form_23110326";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteAuthor(@PathVariable Integer id, HttpSession session, RedirectAttributes redirectAttributes) {
-        Boolean isAdmin = (Boolean) sessionService.getAttribute(session, "isAdmin");
+        Boolean isAdmin = (Boolean) sessionService_23110326.getAttribute(session, "isAdmin");
         if (isAdmin == null || !isAdmin) {
             return "redirect:/home";
         }
 
-        authorService.deleteAuthor(id);
+        authorService_23110326.deleteAuthor(id);
         redirectAttributes.addFlashAttribute("message", "Tác giả đã được xóa thành công!");
         return "redirect:/admin/authors";
     }

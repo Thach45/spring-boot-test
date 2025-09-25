@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout :: head}"></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layout_23110326}">
+<head>
+    <title th:text="${author != null ? 'Sửa tác giả' : 'Thêm tác giả mới'}">Quản lý tác giả</title>
+</head>
 <body>
-    <div th:replace="~{layout :: main-layout(~{::div.content})}">
-        <div class="content">
+    <div layout:fragment="content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 th:text="${author.author_id == null ? 'Thêm tác giả mới' : 'Sửa tác giả'}"></h2>
                 <a th:href="@{/admin/authors}" class="btn btn-secondary">Quay lại</a>
@@ -34,7 +36,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </body>
 </html>
